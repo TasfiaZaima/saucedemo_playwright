@@ -1,5 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 
+// The setup project creates this file once. The real tests reuse the saved login.
+const authFile = 'playwright/.auth/user.json';
+
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -31,15 +34,31 @@ export default defineConfig({
       slowMo: 500,
     },
 
+    // CSS ID selectors such as page.locator('#user-name') need no config.
+    // If using page.getByTestId() with SauceDemo's data-test attributes,
+    // uncomment the following option:
+    // testIdAttribute: 'data-test',
+
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
   },
 
   /* Run the SauceDemo suite in Chromium by default. */
   projects: [
+    // This project runs only the login setup test.
+    {
+      name: 'setup',
+      testMatch: /.*\.setup\.ts/,
+    },
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        // Load the saved cookies/local storage created by setup.
+        storageState: authFile,
+      },
+      // Run setup before the Chromium tests.
+      dependencies: ['setup'],
     },
   ],
 

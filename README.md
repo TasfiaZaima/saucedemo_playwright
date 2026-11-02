@@ -25,3 +25,13 @@ npm run codegen
 ```
 
 Use the demo credentials `standard_user` / `secret_sauce` when recording a login flow.
+
+## Reuse login with storage state
+
+The `tests/auth.setup.ts` setup test logs in once and saves the authenticated browser state to `playwright/.auth/user.json`. The Chromium project depends on that setup and loads the saved state for every test, so the individual tests do not repeat the login steps.
+
+```bash
+npx playwright test
+```
+
+The saved authentication file is ignored by Git. If the session expires, delete `playwright/.auth/user.json` and run the tests again to create a fresh state.
