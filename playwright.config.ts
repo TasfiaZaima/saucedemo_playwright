@@ -27,6 +27,9 @@ export default defineConfig({
   use: {
     baseURL: 'https://www.saucedemo.com',
     headless: true,
+    launchOptions: {
+      slowMo: 500,
+    },
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
